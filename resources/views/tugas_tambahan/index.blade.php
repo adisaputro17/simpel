@@ -6,17 +6,15 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mt-3">
                 <div class="card-header bg-light text-white">
-                    <h3 class="card-title"><b>Daftar Tugas Tambahan</b></h3>
-                     @if(auth('pegawai')->user()->bawahan->count() > 0)
-                    <a href="{{ route('tugas_tambahan.create') }}" class="btn btn-primary btn-sm float-right">
-                        <i class="fas fa-plus-circle"></i>Tambah Tugas
-                    </a>
+                    <h4 class="card-title mb-0"><strong>Data Tugas Tambahan</strong></h4>
+                    @if(auth('pegawai')->user()->bawahan->count() > 0)
+                        <a href="{{ route('tugas_tambahan.create') }}" class="btn btn-primary btn-sm float-right" style="color: white !important;">
+                            <i class="fas fa-plus-circle"></i> Tambah Tugas
+                        </a>
                     @endif
                 </div>
-                
 
                 <div class="card-body">
                     @if(session('success'))
@@ -64,14 +62,10 @@
                                                 <span class="badge badge-secondary">Read Only</span>
                                             @endif
                                         </td>
-
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-
-                   
-
                     </div> 
                 </div> 
             </div> 
@@ -81,11 +75,13 @@
 </div>
 @endsection
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+@endpush
+
 @push('scripts')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -94,11 +90,11 @@
             responsive: true,
             autoWidth: false,
             language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
                 zeroRecords: "Belum ada data tugas tambahan",
-                info: " Showing _START_ to _END_ of _TOTAL_ entries",
-                infoEmpty: " 0 to 0 of 0 entries",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
                 infoFiltered: "(disaring dari _MAX_ total data)",
                 paginate: {
                     first: "Pertama",

@@ -33,7 +33,7 @@
                         @include('izin_keluar.form')
                     </div>
                     <div class="card-footer text-right">
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Simpan
                         </button>
                         <a href="{{ route('izin_keluar.index') }}" class="btn btn-secondary">
