@@ -83,6 +83,7 @@
     </select>
 </div>
 
+
 <div class="mb-3">
     <label for="keterangan" class="form-label">Keterangan</label>
     <textarea name="keterangan" id="keterangan" rows="3" class="form-control">{{ old('keterangan', $item->keterangan ?? '') }}</textarea>
