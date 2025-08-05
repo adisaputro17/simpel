@@ -27,21 +27,23 @@
                         <table id="tugasTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th>Tanggal</th>
-                                    <th>NIP</th>
-                                    <th>Nama</th>
-                                    <th>Jam Mulai</th>
-                                    <th>Jam Selesai</th>
-                                    <th>Keterangan</th>
-                                    <th>Aksi</th>
+                                    <th  class="text-center" style="width: 1%;">NO</th>
+                                    <th  class="text-center">NIP</th>
+                                    <th  class="text-center">Nama</th>
+                                    <th  class="text-center">Tanggal</th>
+                                    <th  class="text-center">Jam Mulai</th>
+                                    <th  class="text-center">Jam Selesai</th>
+                                    <th  class="text-center">Keterangan</th>
+                                    <th  class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                    @forelse($data as $index => $item)
                                     <tr>
-                                        <td>{{ $item->tanggal }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
                                         <td>{{ $item->jam_mulai }}</td>
                                         <td>{{ $item->jam_selesai }}</td>
                                         <td>{{ $item->keterangan }}</td>

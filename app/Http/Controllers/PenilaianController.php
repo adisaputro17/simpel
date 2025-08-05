@@ -47,7 +47,8 @@ class PenilaianController extends Controller
             $pegawai = $user->bawahan;
         }
 
-       return view("penilaian.$jenis.create", compact('pegawai', 'jenis'));
+
+        return view("penilaian.$jenis.create", compact('pegawai', 'jenis'));
     }
 
     /**
