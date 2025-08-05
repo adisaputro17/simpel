@@ -60,6 +60,18 @@
                 allowClear: true,
                 width: '100%'
             });
+
+              $('#bulan').select2({
+                placeholder: "-- Pilih Bulan --",
+                allowClear: true,
+                width: '100%'
+            });
+
+             $('#nilai').select2({
+                placeholder: "-- Pilih Nilai --",
+                allowClear: true,
+                width: '100%'
+            });
         });
     </script>
 @endpush

@@ -27,20 +27,32 @@
                         <table id="penilaianTable" class="table table-bordered table-hover table-striped">
                           <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th>NIP</th>
-                                    <th>Nilai</th>
-                                    <th>Bulan</th>
-                                    <th>Tahun</th>
-                                    <th>Keterangan</th>
-                                    <th class="text-center">Aksi</th>
+                                    <th  class="text-center" style="width: 1%;">NO</th>
+                                    <th  class="text-center">NIP</th>
+                                    <th  class="text-center">Nama</th> 
+                                    <th  class="text-center">Nilai</th>
+                                    <th  class="text-center">Bulan</th>
+                                    <th  class="text-center">Tahun</th>
+                                    <th  class="text-center">Keterangan</th>
+                                    <th  class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                            <tbody>
-                        @foreach($data as $item)
+                         @forelse($data as $index => $item)
                             <tr>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->nip }}</td>
-                                <td>{{ $item->nilai }}</td>
-                                <td>{{ $item->bulan }}</td>
+                                <td>{{ $item->nama_pegawai }}</td>
+                                         @php
+                                        $deskripsiNilai = [
+                                            25 => 'Kurang Baik',
+                                            50 => 'Cukup Baik',
+                                            75 => 'Baik',
+                                            100 => 'Sangat Baik',
+                                        ];
+                                         @endphp
+                                <td>{{ $item->nilai }} ({{ $deskripsiNilai[$item->nilai] ?? 'Tidak Diketahui' }})</td>
+                                <td>{{ \Carbon\Carbon::createFromFormat('m', $item->bulan)->translatedFormat('F') }}</td>
                                 <td>{{ $item->tahun }}</td>
                                 <td>{{ $item->keterangan }}</td>
                                 <td class="text-center">
