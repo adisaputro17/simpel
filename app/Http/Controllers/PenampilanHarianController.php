@@ -10,9 +10,16 @@ class PenampilanHarianController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = PenampilanHarian::with('pegawai')->orderBy('tanggal', 'desc')->get();;
+        $query = PenampilanHarian::with('pegawai')->orderBy('tanggal', 'desc');
+
+        if ($request->has('tanggal') && $request->tanggal != '') {
+            $query->whereDate('tanggal', $request->tanggal);
+        }
+
+        $data = $query->get();
+
         return view('penampilan_harian.index', compact('data'));
     }
 
