@@ -1,14 +1,12 @@
-<!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link">
-        <i class="fas fa-user-shield ml-3"></i>
+        <i class="fas fa-hands-helping ml-3"></i>
         <span class="brand-text font-weight-light ml-2">SIMPEL</span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                 <!-- Dashboard -->
@@ -56,31 +54,33 @@
                         <li class="nav-item">
                             <a href="{{ route('penilaian.index', 'inovasi') }}" class="nav-link {{ request()->is('penilaian/inovasi*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Inovasi </p>
+                                <p>Inovasi</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('penilaian.index', 'kerja_sama')}}" class="nav-link {{ request()->is('penilaian/kerja_sama*') ? 'active' : '' }}">
+                            <a href="{{ route('penilaian.index', 'kerja_sama') }}" class="nav-link {{ request()->is('penilaian/kerja_sama*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Kerja Sama </p>
+                                <p>Kerja Sama</p>
                             </a>
                         </li>
-                         <li class="nav-item">
-                            <a href="{{ route('penilaian.index', 'objektif')}}" class="nav-link {{ request()->is('penilaian/objectif*') ? 'active' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ route('penilaian.index', 'objektif') }}" class="nav-link {{ request()->is('penilaian/objektif*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Objectif</p>
+                                <p>Objektif</p>
                             </a>
                         </li>
-                        
                     </ul>
                 </li>
-                  <li class="nav-item">
+
+                <!-- Penampilan -->
+                <li class="nav-item">
                     <a href="{{ route('penampilan.index') }}" class="nav-link {{ request()->is('penampilan*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-check"></i>
                         <p>Penampilan</p>
                     </a>
                 </li>
 
+                <!-- Layanan -->
                 <li class="nav-item">
                     <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->is('layanan*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-clipboard-list"></i>
@@ -88,13 +88,13 @@
                     </a>
                 </li>
 
+                <!-- Keluhan -->
                 <li class="nav-item">
                     <a href="{{ route('keluhan.index') }}" class="nav-link {{ request()->is('keluhan*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-comments"></i>
                         <p>Keluhan</p>
                     </a>
                 </li>
-
 
             </ul>
         </nav>

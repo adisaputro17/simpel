@@ -1,21 +1,19 @@
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
+    <!-- Left navbar toggle button -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <!-- Tombol toggle sidebar -->
             <a class="nav-link" data-widget="pushmenu" href="#" role="button">
                 <i class="fas fa-bars"></i>
             </a>
         </li>
     </ul>
 
-    <!-- Right navbar links -->
+    <!-- Right user menu -->
     <ul class="navbar-nav ml-auto">
-        <!-- User Dropdown Menu -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button">
                 <i class="far fa-user"></i>
-               {{ auth()->guard('pegawai')->user()->nama ?? 'Pegawai' }}
+                {{ auth()->guard('pegawai')->user()->nama ?? 'Pegawai' }}
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <a href="#" class="dropdown-item">
