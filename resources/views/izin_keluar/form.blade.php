@@ -10,7 +10,6 @@
     </select>
 </div>
 
-
 <div class="form-group">
     <label for="tanggal">Tanggal</label>
     <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ old('tanggal', $izinKeluar->tanggal ?? '') }}" required>
@@ -19,17 +18,14 @@
 <div class="form-row">
     <div class="form-group col-md-6">
         <label for="jam_keluar">Jam Keluar</label>
-        <input type="time" name="jam_keluar" id="jam_keluar" class="form-control"
-               value="{{ old('jam_keluar', $izinKeluar->jam_keluar ?? '') }}" required>
+        <input type="time" name="jam_keluar" id="jam_keluar" class="form-control" value="{{ old('jam_keluar', $izinKeluar->jam_keluar ?? '') }}" required>
     </div>
 
     <div class="form-group col-md-6">
         <label for="jam_kembali">Jam Kembali</label>
-        <input type="time" name="jam_kembali" id="jam_kembali" class="form-control"
-               value="{{ old('jam_kembali', $izinKeluar->jam_kembali ?? '') }}" required>
+        <input type="time" name="jam_kembali" id="jam_kembali" class="form-control" value="{{ old('jam_kembali', $izinKeluar->jam_kembali ?? '') }}" required>
     </div>
 </div>
-
 
 <div class="form-group">
     <label for="keterangan">Keterangan</label>
