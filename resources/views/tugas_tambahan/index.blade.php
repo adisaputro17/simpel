@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Data Tugas Tambahan')
-
 @section('content')
 <div class="container-fluid">
     <div class="row">

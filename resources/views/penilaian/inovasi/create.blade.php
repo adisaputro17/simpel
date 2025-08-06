@@ -66,6 +66,7 @@
                 width: '100%'
             });
 
+            
             $('#bulan').select2({
                 placeholder: "-- Pilih Bulan --",
                 allowClear: true,

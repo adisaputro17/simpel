@@ -81,7 +81,6 @@
     </select>
 </div>
 
-
 <div class="form-group">
     <label for="keterangan">Keterangan</label>
     <textarea name="keterangan" id="keterangan" class="form-control" rows="3">{{ old('keterangan', $item->keterangan ?? '') }}</textarea>

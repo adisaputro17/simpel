@@ -3,7 +3,7 @@
 @section('title', 'Kerja Sama')
 @push('styles')
 <style>
-/* Fix tampilan tinggi select2 agar mirip input Bootstrap */
+
 .select2-container--default .select2-selection--single {
     height: 38px !important;
     padding: 6px 12px;
