@@ -15,16 +15,20 @@ class PenilaianController extends Controller
     public function index($jenis)
     {
         $user = Auth::guard('pegawai')->user();
-        $query = Penilaian::where('jenis', $jenis);
+
+        $query = Penilaian::where('jenis', $jenis)
+            ->join('pegawais', 'penilaians.nip', '=', 'pegawais.nip')
+            ->select('penilaians.*', 'pegawais.nama as nama_pegawai');
 
         if ($jenis === 'kerja_sama') {
             $query->where('dari', $user->nip);
         } elseif (in_array($jenis, ['objektif', 'inovasi'])) {
             $bawahan = $user->bawahan->pluck('nip');
-            $query->whereIn('nip', $bawahan);
+            $query->whereIn('penilaians.nip', $bawahan);
         }
 
         $data = $query->get();
+
         return view("penilaian.$jenis.index", compact('data'));
     }
 
@@ -34,11 +38,15 @@ class PenilaianController extends Controller
     public function create($jenis)
     {
         $user = Auth::guard('pegawai')->user();
+
         if ($jenis === 'kerja_sama') {
-            $pegawai = Pegawai::where('nip', '!=', $user->nip)->get();
+            $pegawai = Pegawai::where('nip', '!=', $user->nip)
+                            ->where('nip', '!=', '196705061992021003')
+                            ->get();
         } else {
             $pegawai = $user->bawahan;
         }
+
 
         return view("penilaian.$jenis.create", compact('pegawai', 'jenis'));
     }
@@ -48,13 +56,9 @@ class PenilaianController extends Controller
      */
     public function store(Request $request, $jenis)
     {
-        $request->validate([
-            'nip' => 'required|exists:pegawais,nip|different:dari',
-            'nilai' => 'required|in:25,50,75,100',
-            'bulan' => 'required',
-            'tahun' => 'required',
-        ]);
+          
 
+    
         // Cek apakah data sudah ada
         $query = Penilaian::where([
             'nip' => $request->nip,
@@ -62,7 +66,8 @@ class PenilaianController extends Controller
             'bulan' => $request->bulan,
             'tahun' => $request->tahun,
         ]);
-        
+
+     
         if ($jenis === 'kerja_sama') {
             $query->where('dari', auth('pegawai')->user()->nip);
         }
@@ -118,12 +123,7 @@ class PenilaianController extends Controller
     {
         $item = Penilaian::where('jenis', $jenis)->findOrFail($id);
 
-        $request->validate([
-            'nip' => 'required|exists:pegawais,nip|different:dari',
-            'nilai' => 'required|in:25,50,75,100',
-            'bulan' => 'required',
-            'tahun' => 'required',
-        ]);
+       
 
         // Cek apakah data sudah ada
         $query = Penilaian::where([

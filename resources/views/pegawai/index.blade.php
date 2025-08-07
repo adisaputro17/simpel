@@ -27,11 +27,11 @@
                         <table id="pegawaiTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th style="width: 1%;">NO</th>
-                                    <th>NIP</th>
-                                    <th>Nama</th>
-                                    <th>Atasan</th>
-                                    <th>Aksi</th>
+                                    <th  class="text-center" style="width: 1%;">NO</th>
+                                    <th  class="text-center">NIP</th>
+                                    <th  class="text-center">Nama</th>
+                                    <th  class="text-center">Atasan</th>
+                                    <th  class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>

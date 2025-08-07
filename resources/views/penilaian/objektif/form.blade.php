@@ -11,34 +11,78 @@
 </div>
 
 
-<div class="mb-3">
-    <label for="bulan" class="form-label">Bulan</label>
-    <select name="bulan" id="bulan" class="form-control">
-        @for ($i = 1; $i <= 12; $i++)
-            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                {{ old('bulan', $item->bulan ?? '') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+<div class="form-group">
+    <div class="row">
+
+        <div class="col-md-6">
+            <label for="bulan">Bulan</label>
+            <select name="bulan" id="bulan" class="form-control select2">
+                @php
+                    $bulanList = [
+                        '01' => 'Januari',
+                        '02' => 'Februari',
+                        '03' => 'Maret',
+                        '04' => 'April',
+                        '05' => 'Mei',
+                        '06' => 'Juni',
+                        '07' => 'Juli',
+                        '08' => 'Agustus',
+                        '09' => 'September',
+                        '10' => 'Oktober',
+                        '11' => 'November',
+                        '12' => 'Desember',
+                    ];
+                    $selectedBulan = old('bulan', $item->bulan ?? date('m'));
+                @endphp
+                @foreach($bulanList as $num => $nama)
+                    <option value="{{ $num }}" {{ $selectedBulan == $num ? 'selected' : '' }}>
+                        {{ $nama }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+
+        <div class="col-md-6">
+            <label for="tahun">Tahun</label>
+            <select name="tahun" id="tahun" class="form-control select2">
+                @php
+                    $tahunSekarang = date('Y');
+                    $selectedTahun = old('tahun', $item->tahun ?? $tahunSekarang);
+                @endphp
+
+                @for ($tahun = 2025; $tahun <= 2026; $tahun++)
+                    <option value="{{ $tahun }}" {{ $selectedTahun == $tahun ? 'selected' : '' }}>
+                        {{ $tahun }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label for="nilai">Nilai</label>
+    <select name="nilai" id="nilai" class="form-control select2">
+        @php
+            $daftarNilai = [
+                25 => 'Kurang Baik',
+                50 => 'Cukup Baik',
+                75 => 'Baik',
+                100 => 'Sangat Baik',
+            ];
+            $selected = old('nilai', $item->nilai ?? 100); // default ke 100
+        @endphp
+
+        @foreach($daftarNilai as $angka => $label)
+            <option value="{{ $angka }}" {{ $selected == $angka ? 'selected' : '' }}>
+                {{ $angka }} - {{ $label }}
             </option>
-        @endfor
-    </select>
-</div>
-
-<div class="mb-3">
-    <label for="tahun" class="form-label">Tahun</label>
-    <select name="tahun" id="tahun" class="form-control">
-        <option value="2025" {{ old('tahun', $item->tahun ?? '') == '2025' ? 'selected' : '' }}>2025</option>
-        <option value="2026" {{ old('tahun', $item->tahun ?? '') == '2026' ? 'selected' : '' }}>2026</option>
-    </select>
-</div>
-
-<div class="mb-3">
-    <label for="nilai" class="form-label">Nilai</label>
-    <select name="nilai" id="nilai" class="form-control">
-        @foreach([25,50,75,100] as $n)
-            <option value="{{ $n }}" {{ old('nilai', $item->nilai ?? '') == $n ? 'selected' : '' }}>{{ $n }}</option>
         @endforeach
     </select>
 </div>
+
 
 <div class="mb-3">
     <label for="keterangan" class="form-label">Keterangan</label>

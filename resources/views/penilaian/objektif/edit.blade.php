@@ -2,7 +2,7 @@
 @section('title', 'Edit Objectif')
 @push('styles')
 <style>
-/* Fix tampilan tinggi select2 agar mirip input Bootstrap */
+
 .select2-container--default .select2-selection--single {
     height: 38px !important;
     padding: 6px 12px;
@@ -60,6 +60,18 @@
         $(document).ready(function() {
             $('#nip').select2({
                 placeholder: "-- Pilih Pegawai --",
+                allowClear: true,
+                width: '100%'
+            });
+
+               $('#bulan').select2({
+                placeholder: "-- Pilih Bulan --",
+                allowClear: true,
+                width: '100%'
+            });
+
+             $('#nilai').select2({
+                placeholder: "-- Pilih Nilai --",
                 allowClear: true,
                 width: '100%'
             });
