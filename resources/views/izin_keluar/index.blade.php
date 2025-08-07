@@ -27,9 +27,9 @@
                         <table id="izinTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
+                                    <th>Tanggal</th>
                                     <th>NIP</th>
                                     <th>Nama</th>
-                                    <th>Tanggal</th>
                                     <th>Jam Keluar</th>
                                     <th>Jam Kembali</th>
                                     <th>Keterangan</th>
@@ -39,9 +39,9 @@
                             <tbody>
                                 @foreach($izinKeluar as $item)
                                     <tr>
+                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
-                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->jam_keluar }}</td>
                                         <td>{{ $item->jam_kembali }}</td>
                                         <td>{{ $item->keterangan }}</td>
@@ -88,6 +88,10 @@
             $('#izinTable').DataTable({
                 responsive: true,
                 autoWidth: false,
+                order: [
+                    [0, 'desc'],
+                    [1, 'asc']
+                ],
                 language: {
                     search: "Cari:",
                     lengthMenu: "Tampilkan _MENU_ data",

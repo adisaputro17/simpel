@@ -17,7 +17,7 @@ class IzinKeluarController extends Controller
 
         // Jika atasan, tampilkan bawahannya
         if ($user->bawahan()->exists()) {
-            $izinKeluar = IzinKeluar::whereIn('nip', $user->bawahan->pluck('nip'))->get();
+            $izinKeluar = IzinKeluar::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->get();
         } else {
             $izinKeluar = IzinKeluar::where('nip', $user->nip)->get();
         }

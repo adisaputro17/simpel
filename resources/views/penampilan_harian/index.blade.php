@@ -80,6 +80,10 @@
             $('#penampilanTable').DataTable({
                 responsive: true,
                 autoWidth: false,
+                order: [
+                    [0, 'desc'],
+                    [1, 'asc']
+                ],
                 language: {
                     search: "Cari:",
                     lengthMenu: "Tampilkan _MENU_ data",

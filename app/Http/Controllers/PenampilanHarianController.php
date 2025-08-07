@@ -14,6 +14,16 @@ class PenampilanHarianController extends Controller
     {
         $query = PenampilanHarian::with('pegawai')->orderBy('tanggal', 'desc');
 
+        $user = auth('pegawai')->user();
+        $bawahan = $user->bawahan;
+
+        if ($bawahan->isNotEmpty()) {
+            $nips = $bawahan->pluck('nip')->push($user->nip);
+            $query->whereIn('nip', $nips);
+        } else {
+            $query->where('nip', $user->nip);
+        }
+        
         if ($request->has('tanggal') && $request->tanggal != '') {
             $query->whereDate('tanggal', $request->tanggal);
         }
@@ -28,7 +38,9 @@ class PenampilanHarianController extends Controller
      */
     public function create()
     {
-        $pegawai = auth('pegawai')->user()->bawahan ?? collect();
+        $user = auth('pegawai')->user();
+        $pegawai = $user ? $user->bawahan()->orderBy('nip')->get() : collect();
+
         return view('penampilan_harian.create', compact('pegawai'));
     }
 

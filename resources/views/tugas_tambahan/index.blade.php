@@ -28,9 +28,9 @@
                         <table id="tugasTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
+                                    <th>Tanggal</th>
                                     <th>NIP</th>
                                     <th>Nama</th>
-                                    <th>Tanggal</th>
                                     <th>Jam Mulai</th>
                                     <th>Jam Selesai</th>
                                     <th>Keterangan</th>
@@ -40,9 +40,9 @@
                             <tbody>
                                 @foreach($data as $item)
                                     <tr>
+                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
-                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->jam_mulai }}</td>
                                         <td>{{ $item->jam_selesai }}</td>
                                         <td>{{ $item->keterangan }}</td>
@@ -89,6 +89,10 @@
         $('#tugasTable').DataTable({
             responsive: true,
             autoWidth: false,
+            order: [
+                [0, 'desc'],
+                [1, 'asc']
+            ],
             language: {
                 search: "Cari:",
                 lengthMenu: "Tampilkan _MENU_ data",
