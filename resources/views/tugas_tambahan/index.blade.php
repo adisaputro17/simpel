@@ -42,6 +42,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
+                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
                                         <td>{{ $item->jam_mulai }}</td>
