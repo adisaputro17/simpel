@@ -16,7 +16,7 @@ class TugasTambahanController extends Controller
         $user = Auth::guard('pegawai')->user();
 
         if ($user->bawahan()->exists()) {
-            $data = TugasTambahan::whereIn('nip', $user->bawahan->pluck('nip'))->get();
+            $data = TugasTambahan::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->get();
         } else {
             $data = TugasTambahan::where('nip', $user->nip)->get();
         }
