@@ -27,7 +27,6 @@
                         <table id="tugasTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th  class="text-center" style="width: 1%;">NO</th>
                                     <th>Tanggal</th>
                                     <th>NIP</th>
                                     <th>Nama</th>
@@ -40,8 +39,7 @@
                             <tbody>
                                    @forelse($data as $index => $item)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
+                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
                                         <td>{{ $item->jam_mulai }}</td>
