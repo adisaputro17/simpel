@@ -16,16 +16,16 @@ class PenilaianController extends Controller
     {
         $user = Auth::guard('pegawai')->user();
 
-        $query = Penilaian::where('jenis', $jenis)
-            ->join('pegawais', 'penilaians.nip', '=', 'pegawais.nip')
-            ->select('penilaians.*', 'pegawais.nama as nama_pegawai');
+        $query = Penilaian::with('pegawai')->where('jenis', $jenis);
 
         if ($jenis === 'kerja_sama') {
             $query->where('dari', $user->nip);
         } elseif (in_array($jenis, ['objektif', 'inovasi'])) {
-            $bawahan = $user->bawahan->pluck('nip');
-            $query->whereIn('penilaians.nip', $bawahan);
+            $nips = $user->bawahan->pluck('nip')->push($user->nip);
+            $query->whereIn('nip', $nips);
         }
+
+        $query->orderBy('bulan', 'desc')->orderBy('nip', 'asc');
 
         $data = $query->get();
 
@@ -37,16 +37,13 @@ class PenilaianController extends Controller
      */
     public function create($jenis)
     {
-        $user = Auth::guard('pegawai')->user();
+        $user = auth('pegawai')->user();
 
         if ($jenis === 'kerja_sama') {
-            $pegawai = Pegawai::where('nip', '!=', $user->nip)
-                            ->where('nip', '!=', '196705061992021003')
-                            ->get();
+            $pegawai = Pegawai::where('nip', '!=', $user->nip)->where('nip', '!=', '196705061992021003')->orderBy('nip', 'asc')->get();
         } else {
-            $pegawai = $user->bawahan;
+            $pegawai = $user->bawahan->sortBy('nip');
         }
-
 
         return view("penilaian.$jenis.create", compact('pegawai', 'jenis'));
     }
@@ -56,9 +53,13 @@ class PenilaianController extends Controller
      */
     public function store(Request $request, $jenis)
     {
-          
+        $request->validate([
+            'nip' => 'required|exists:pegawais,nip',
+            'nilai' => 'required|in:25,50,75,100',
+            'bulan' => 'required',
+            'tahun' => 'required',
+        ]);
 
-    
         // Cek apakah data sudah ada
         $query = Penilaian::where([
             'nip' => $request->nip,
@@ -67,7 +68,6 @@ class PenilaianController extends Controller
             'tahun' => $request->tahun,
         ]);
 
-     
         if ($jenis === 'kerja_sama') {
             $query->where('dari', auth('pegawai')->user()->nip);
         }
@@ -105,12 +105,12 @@ class PenilaianController extends Controller
     public function edit($jenis, $id)
     {
         $item = Penilaian::where('jenis', $jenis)->findOrFail($id);
-        $user = Auth::guard('pegawai')->user();
+        $user = auth('pegawai')->user();
 
         if ($jenis === 'kerja_sama') {
-            $pegawai = Pegawai::where('nip', '!=', $user->nip)->get();
+            $pegawai = Pegawai::where('nip', '!=', $user->nip)->where('nip', '!=', '196705061992021003')->orderBy('nip', 'asc')->get();
         } else {
-            $pegawai = $user->bawahan;
+            $pegawai = $user->bawahan->sortBy('nip');
         }
 
         return view("penilaian.$jenis.edit", compact('item', 'pegawai', 'jenis'));
@@ -123,26 +123,32 @@ class PenilaianController extends Controller
     {
         $item = Penilaian::where('jenis', $jenis)->findOrFail($id);
 
-       
+        $request->validate([
+            'nip' => 'required|exists:pegawais,nip',
+            'nilai' => 'required|in:25,50,75,100',
+            'bulan' => 'required',
+            'tahun' => 'required',
+        ]);
 
         // Cek apakah data sudah ada
-        $query = Penilaian::where([
-            'nip' => $request->nip,
-            'jenis' => $jenis,
-            'bulan' => $request->bulan,
-            'tahun' => $request->tahun,
-        ]);
+        if ($request->nip !== $item->nip) {
+            $query = Penilaian::where([
+                'nip' => $request->nip,
+                'jenis' => $jenis,
+                'bulan' => $request->bulan,
+                'tahun' => $request->tahun,
+            ]);
         
-        if ($jenis === 'kerja_sama') {
-            $query->where('dari', auth('pegawai')->user()->nip);
-        }
-        
-        $exists = $query->exists();
-        
-        if ($exists) {
-        return redirect()->route("penilaian.index", $jenis)->with('error', 'Penilaian untuk pegawai ini pada bulan dan tahun tersebut sudah ada.');
-        }
+            if ($jenis === 'kerja_sama') {
+                $query->where('dari', auth('pegawai')->user()->nip);
+            }
+            
+            $exists = $query->exists();
 
+            if ($exists) {
+            return redirect()->route("penilaian.index", $jenis)->with('error', 'Penilaian untuk pegawai ini pada bulan dan tahun tersebut sudah ada.');
+            }
+        }
 
         $item->update([
             'nip' => $request->nip,

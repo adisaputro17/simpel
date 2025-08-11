@@ -27,26 +27,25 @@
                         <table id="tugasTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th  class="text-center" style="width: 1%;">NO</th>
-                                    <th>Tanggal</th>
-                                    <th>NIP</th>
-                                    <th>Nama</th>
-                                    <th>Jam Mulai</th>
-                                    <th>Jam Selesai</th>
-                                    <th>Keterangan</th>
-                                    <th>Aksi</th>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">NIP</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Jam Mulai</th>
+                                    <th class="text-center">Jam Selesai</th>
+                                    <th class="text-center">Keterangan</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                    @forelse($data as $index => $item)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td class="text-center">{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
-                                        <td>{{ $item->tanggal }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
-                                        <td>{{ $item->jam_mulai }}</td>
-                                        <td>{{ $item->jam_selesai }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->jam_mulai)->format('H:i') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->jam_selesai)->format('H:i') }}</td>
                                         <td>{{ $item->keterangan }}</td>
                                         <td class="text-center">
                                             @if(auth('pegawai')->user()->bawahan->contains('nip', $item->nip))
@@ -91,10 +90,6 @@
         $('#tugasTable').DataTable({
             responsive: true,
             autoWidth: false,
-            order: [
-                [0, 'desc'],
-                [1, 'asc']
-            ],
             language: {
                 search: "Cari:",
                 lengthMenu: "Tampilkan _MENU_ data",

@@ -52,6 +52,12 @@
                     </a>
                     <ul class="nav nav-treeview ml-3">
                         <li class="nav-item">
+                            <a href="{{ route('penilaian.index', 'objektif') }}" class="nav-link {{ request()->is('penilaian/objektif*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Objektif</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('penilaian.index', 'inovasi') }}" class="nav-link {{ request()->is('penilaian/inovasi*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Inovasi</p>
@@ -61,12 +67,6 @@
                             <a href="{{ route('penilaian.index', 'kerja_sama') }}" class="nav-link {{ request()->is('penilaian/kerja_sama*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Kerja Sama</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('penilaian.index', 'objektif') }}" class="nav-link {{ request()->is('penilaian/objektif*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Objektif</p>
                             </a>
                         </li>
                     </ul>

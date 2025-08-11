@@ -33,19 +33,21 @@
                         <table id="penampilanTable" class="table table-bordered table-striped table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th>Tanggal</th>
-                                    <th>NIP</th>
-                                    <th>Nama</th>
-                                    <th>Atribut Lengkap</th>
-                                    <th>Seragam Sesuai Jadwal</th>
-                                    <th>Seragam Sesuai Aturan</th>
-                                    <th>Rapi</th>
-                                    <th>Keterangan</th>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">NIP</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Atribut Lengkap</th>
+                                    <th class="text-center">Seragam Sesuai Jadwal</th>
+                                    <th class="text-center">Seragam Sesuai Aturan</th>
+                                    <th class="text-center">Rapi</th>
+                                    <th class="text-center">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($data as $d)
                                     <tr>
+                                        <td class="text-center">{{ $loop->iteration }}</td>
                                         <td>{{ $d->tanggal }}</td>
                                         <td>{{ $d->nip }}</td>
                                         <td>{{ $d->pegawai->nama }}</td>
@@ -80,10 +82,6 @@
             $('#penampilanTable').DataTable({
                 responsive: true,
                 autoWidth: false,
-                order: [
-                    [0, 'desc'],
-                    [1, 'asc']
-                ],
                 language: {
                     search: "Cari:",
                     lengthMenu: "Tampilkan _MENU_ data",

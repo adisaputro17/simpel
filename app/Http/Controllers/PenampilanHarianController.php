@@ -12,7 +12,7 @@ class PenampilanHarianController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PenampilanHarian::with('pegawai')->orderBy('tanggal', 'desc');
+        $query = PenampilanHarian::with('pegawai')->orderBy('tanggal', 'desc')->orderBy('nip', 'asc');
 
         $user = auth('pegawai')->user();
         $bawahan = $user->bawahan;

@@ -27,23 +27,25 @@
                         <table id="izinTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th>Tanggal</th>
-                                    <th>NIP</th>
-                                    <th>Nama</th>
-                                    <th>Jam Keluar</th>
-                                    <th>Jam Kembali</th>
-                                    <th>Keterangan</th>
-                                    <th>Aksi</th>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">NIP</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Jam Keluar</th>
+                                    <th class="text-center">Jam Kembali</th>
+                                    <th class="text-center">Keterangan</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($izinKeluar as $item)
                                     <tr>
-                                        <td>{{ $item->tanggal }}</td>
+                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
                                         <td>{{ $item->nip }}</td>
                                         <td>{{ $item->pegawai->nama ?? '-' }}</td>
-                                        <td>{{ $item->jam_keluar }}</td>
-                                        <td>{{ $item->jam_kembali }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->jam_keluar)->format('H:i') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->jam_kembali)->format('H:i') }}</td>
                                         <td>{{ $item->keterangan }}</td>
                                         <td class="text-center">
                                             @if(auth('pegawai')->user()->bawahan->contains('nip', $item->nip))
@@ -88,10 +90,6 @@
             $('#izinTable').DataTable({
                 responsive: true,
                 autoWidth: false,
-                order: [
-                    [0, 'desc'],
-                    [1, 'asc']
-                ],
                 language: {
                     search: "Cari:",
                     lengthMenu: "Tampilkan _MENU_ data",

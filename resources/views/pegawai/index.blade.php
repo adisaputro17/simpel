@@ -6,15 +6,15 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-           <div class="card-header bg-light text-white">
+            <div class="card shadow-sm mt-3">
+                <div class="card-header bg-light text-white">
                     <h4 class="card-title mb-0"><strong>Data Pegawai</strong></h4>
                     @if(auth('pegawai')->user()->bawahan->count() > 0)
-                    <a href="{{ route('pegawai.create') }}" class="btn btn-primary btn-sm float-right">
-                        <i class="fas fa-plus-circle"></i>Tambah Pegawai
-                     </a>
+                        <a href="{{ route('pegawai.create') }}" class="btn btn-primary btn-sm float-right" style="color: white !important;">
+                            <i class="fas fa-plus-circle"></i> Tambah Pegawai
+                        </a>
                     @endif
                 </div>
-           
                 <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -27,17 +27,17 @@
                         <table id="pegawaiTable" class="table table-bordered table-hover">
                             <thead class="bg-primary text-white text-center">
                                 <tr>
-                                    <th  class="text-center" style="width: 1%;">NO</th>
-                                    <th  class="text-center">NIP</th>
-                                    <th  class="text-center">Nama</th>
-                                    <th  class="text-center">Atasan</th>
-                                    <th  class="text-center">Aksi</th>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">NIP</th>
+                                    <th class="text-center">Nama</th>
+                                    <th class="text-center">Atasan</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                               @forelse($pegawais as $index => $p)
-                                    <tr> 
-                                        <td>{{ $loop->iteration }}</td>
+                                @foreach($pegawais as $p)
+                                    <tr>
+                                        <td class="text-center">{{ $loop->iteration }}</td>
                                         <td>{{ $p->nip }}</td>
                                         <td>{{ $p->nama }}</td>
                                         <td>{{ $p->atasan->nama ?? '-' }}</td>
@@ -53,11 +53,7 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted">Belum ada data pegawai</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -69,33 +65,39 @@
 @endsection
 
 @push('styles')
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 @endpush
 
 @push('scripts')
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    $(document).ready(function () {
-        $('#pegawaiTable').DataTable({
-            responsive: true,
-            autoWidth: false,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
-                zeroRecords: "Tidak ditemukan",
-                info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                infoEmpty: "Data kosong",
-                infoFiltered: "(disaring dari _MAX_ total data)"
-            }
-        });
+    <script>
+        $(document).ready(function () {
+            $('#pegawaiTable').DataTable({
+                responsive: true,
+                autoWidth: false,
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    zeroRecords: "Belum ada data pegawai",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(disaring dari _MAX_ total data)",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Berikutnya",
+                        previous: "Sebelumnya"
+                    },
+                }
+            });
 
-            $('.btn-hapus').click(function (e) {
+            $('.btn-hapus').on('click', function (e) {
                 e.preventDefault();
                 let form = $(this).closest('form');
+
                 Swal.fire({
                     title: 'Yakin ingin menghapus?',
                     text: "Data yang dihapus tidak dapat dikembalikan!",
@@ -111,6 +113,6 @@
                     }
                 });
             });
-    });
-</script>
+        });
+    </script>
 @endpush

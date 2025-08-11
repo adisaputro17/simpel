@@ -2,7 +2,7 @@
     <label for="nip">Pegawai</label>
     <select name="nip" id="nip" class="form-control select2" required>
         <option value="">-- Pilih Pegawai --</option>
-         @foreach($pegawai as $p)
+        @foreach($pegawai as $p)
             <option value="{{ $p->nip }}" {{ old('nip', $item->nip ?? '') == $p->nip ? 'selected' : '' }}>
                 {{ $p->nama }} ({{ $p->nip }})
             </option>
@@ -10,10 +10,8 @@
     </select>
 </div>
 
-
 <div class="form-group">
     <div class="row">
-
         <div class="col-md-6">
             <label for="bulan">Bulan</label>
             <select name="bulan" id="bulan" class="form-control select2">
@@ -42,10 +40,9 @@
             </select>
         </div>
 
-
         <div class="col-md-6">
             <label for="tahun">Tahun</label>
-            <select name="tahun" id="tahun" class="form-control select2">
+            <select name="tahun" id="tahun" class="form-control">
                 @php
                     $tahunSekarang = date('Y');
                     $selectedTahun = old('tahun', $item->tahun ?? $tahunSekarang);
@@ -61,10 +58,9 @@
     </div>
 </div>
 
-
 <div class="form-group">
     <label for="nilai">Nilai</label>
-    <select name="nilai" id="nilai" class="form-control select2">
+    <select name="nilai" id="nilai" class="form-control">
         @php
             $daftarNilai = [
                 25 => 'Kurang Baik',
@@ -83,8 +79,7 @@
     </select>
 </div>
 
-
-<div class="mb-3">
-    <label for="keterangan" class="form-label">Keterangan</label>
-    <textarea name="keterangan" id="keterangan" rows="3" class="form-control">{{ old('keterangan', $item->keterangan ?? '') }}</textarea>
+<div class="form-group">
+    <label for="keterangan">Keterangan</label>
+    <textarea name="keterangan" id="keterangan" class="form-control" rows="3">{{ old('keterangan', $item->keterangan ?? '') }}</textarea>
 </div>

@@ -17,9 +17,9 @@ class IzinKeluarController extends Controller
 
         // Jika atasan, tampilkan bawahannya
         if ($user->bawahan()->exists()) {
-            $izinKeluar = IzinKeluar::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->get();
+            $izinKeluar = IzinKeluar::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->orderBy('bulan', 'desc')->orderBy('nip', 'asc')->get();
         } else {
-            $izinKeluar = IzinKeluar::where('nip', $user->nip)->get();
+            $izinKeluar = IzinKeluar::where('nip', $user->nip)->orderBy('bulan', 'desc')->orderBy('nip', 'asc')->get();
         }
 
         return view('izin_keluar.index', compact('izinKeluar'));
@@ -31,7 +31,7 @@ class IzinKeluarController extends Controller
     public function create()
     {
         $user = Auth::guard('pegawai')->user();
-        $bawahan = $user->bawahan()->get();
+        $bawahan = $user->bawahan()->orderBy('nip', 'asc')->get();
         return view('izin_keluar.create', compact('bawahan'));
     }
 
@@ -76,7 +76,7 @@ class IzinKeluarController extends Controller
     {
         $izinKeluar = IzinKeluar::findOrFail($id);
         $user = Auth::guard('pegawai')->user();
-        $bawahan = $user->bawahan()->get();
+        $bawahan = $user->bawahan()->orderBy('nip', 'asc')->get();
         
         return view('izin_keluar.edit', compact('izinKeluar', 'bawahan'));
     }

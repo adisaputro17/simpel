@@ -16,9 +16,9 @@ class TugasTambahanController extends Controller
         $user = Auth::guard('pegawai')->user();
 
         if ($user->bawahan()->exists()) {
-            $data = TugasTambahan::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->get();
+            $data = TugasTambahan::whereIn('nip', $user->bawahan->pluck('nip')->push($user->nip))->orderBy('bulan', 'desc')->orderBy('nip', 'asc')->get();
         } else {
-            $data = TugasTambahan::where('nip', $user->nip)->get();
+            $data = TugasTambahan::where('nip', $user->nip)->orderBy('bulan', 'desc')->orderBy('nip', 'asc')->get();
         }
 
         return view('tugas_tambahan.index', compact('data'));
@@ -30,7 +30,7 @@ class TugasTambahanController extends Controller
     public function create()
     {
         $user = Auth::guard('pegawai')->user();
-        $bawahan = $user->bawahan;
+        $bawahan = $user->bawahan->sortBy('nip');
         return view('tugas_tambahan.create', compact('bawahan'));
     }
 

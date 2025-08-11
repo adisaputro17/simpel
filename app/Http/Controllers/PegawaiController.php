@@ -12,7 +12,7 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-       $pegawais = Pegawai::with('atasan')->get();
+       $pegawais = Pegawai::with('atasan')->orderBy('nip', 'asc')->get();
         return view('pegawai.index', compact('pegawais'));
     }
 
@@ -21,7 +21,7 @@ class PegawaiController extends Controller
      */
     public function create()
     {
-        $atasans = Pegawai::all();
+        $atasans = Pegawai::all()->sortBy('nip');
         return view('pegawai.create', compact('atasans'));
     }
 
@@ -44,7 +44,7 @@ class PegawaiController extends Controller
             'role' => 'pegawai',
         ]);
 
-        return redirect()->route('pegawai.index');
+        return redirect()->route('pegawai.index')->with('success', 'Data berhasil ditambahkan.');
     }
 
     /**
@@ -61,7 +61,7 @@ class PegawaiController extends Controller
     public function edit(string $nip)
     {
         $pegawai = Pegawai::findOrFail($nip);
-        $atasans = Pegawai::where('nip', '!=', $nip)->get();
+        $atasans = Pegawai::where('nip', '!=', $nip)->orderBy('nip', 'asc')->get();
         return view('pegawai.edit', compact('pegawai', 'atasans'));
     }
 
@@ -83,7 +83,7 @@ class PegawaiController extends Controller
         }
         $pegawai->save();
 
-        return redirect()->route('pegawai.index');
+        return redirect()->route('pegawai.index')->with('success', 'Data berhasil diperbarui.');
     }
 
     /**
@@ -92,6 +92,6 @@ class PegawaiController extends Controller
     public function destroy(string $nip)
     {
         Pegawai::findOrFail($nip)->delete();
-        return redirect()->route('pegawai.index');
+        return redirect()->route('pegawai.index')->with('success', 'Data berhasil dihapus.');
     }
 }
