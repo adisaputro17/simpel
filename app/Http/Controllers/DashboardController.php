@@ -12,40 +12,79 @@ use App\Models\PenampilanHarian;
 use App\Models\Layanan;
 use App\Models\Keluhan;
 use Illuminate\Support\Facades\Auth;
-
+use GuzzleHttp\Client;
 
 
 class DashboardController extends Controller
 {
+    
+    function getPresensiApel($bulan_awal, $bulan_akhir, $tahun) {
+        $username = 'client';
+        $password = 'K0m1nf0@ASNDIGITAL113';
+        $basicAuth = base64_encode("$username:$password");
+        
+        $start_date = "{$tahun}-{$bulan_awal}-01";
+        $last_day = date('t', strtotime("{$tahun}-{$bulan_akhir}-01"));
+        $end_date = "{$tahun}-{$bulan_akhir}-{$last_day}";
+
+        $client = new Client();
+        
+        $response = $client->request('GET', 'https://asndigital.kedirikota.go.id/webservice/presensi_pegawai',
+        [
+            'headers' => [
+                'Authorization' => 'Basic ' . $basicAuth,
+            ],
+            'query' => [
+                'skpd_id'    => 107,
+                'start_date' => $start_date,
+                'end_date'   => $end_date,
+            ],
+        ]);
+        
+        if ($response->getStatusCode() === 200) {
+            $json = json_decode($response->getBody(), true);
+            
+            if (!empty($json['success']) && !empty($json['data']['data'])) {
+                return collect($json['data']['data'])->map(function ($item) {
+                    $item['presentase_hadir'] = (float) $item['presentase_hadir'];
+                    return $item;
+                })->keyBy('nip')->toArray();
+            }
+            
+            return [];
+        } else {
+            return [];
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-    
         $nip = Auth::check() ? Auth::user()->nip : null;
         $totalPegawai = Pegawai::where('atasan_id', $nip)->count(); 
 
         $totalTugas = TugasTambahan::where('nip', $nip)->count();
 
         $totalIzin  = IzinKeluar::where('nip', $nip)->count();
-  
-
-        $bulan_awal = sprintf("%02d", $request->input('bulan_awal'));
-        $bulan_akhir = sprintf("%02d", $request->input('bulan_akhir'));
-        $tahun = $request->input('tahun');
+        
+        $bulan_awal  = (int) $request->input('bulan_awal', date('n'));
+        $bulan_akhir = (int) $request->input('bulan_akhir', date('n'));
+        $tahun       = (int) $request->input('tahun', date('Y'));
+        
+        $bulan_awal  = sprintf("%02d", $bulan_awal);
+        $bulan_akhir = sprintf("%02d", $bulan_akhir);
         $pegawais = Pegawai::all();
 
+        $presensiApel = $this->getPresensiApel($bulan_awal, $bulan_akhir, $tahun);
        
-        $data = $pegawais->map(function ($pegawai) use ($bulan_awal, $bulan_akhir, $tahun) {
-
-     
+        $data = $pegawais->map(function ($pegawai) use ($bulan_awal, $bulan_akhir, $tahun, $presensiApel) {            
             $nilaiAbsensi = 100;
             $nilaiAbsensiBobot = 100 * 0.3;
 
-     
-            $nilaiApel = 100;
-            $nilaiApelBobot = 100 * 0.3;
+            $nilaiApel = $presensiApel[$pegawai->nip]['presentase_hadir'] ?? 0;
+            $nilaiApelBobot = $nilaiApel * 0.3;
 
        
             $izin = IzinKeluar::where('nip', $pegawai->nip)
@@ -236,7 +275,7 @@ class DashboardController extends Controller
                 'nilai_komplain_bobot' => $nilaiKomplainBobot,
                 'total_nilai' => $totalNilai,
             ];
-        });
+        })->sortByDesc('total_nilai')->values();
 
 
 
