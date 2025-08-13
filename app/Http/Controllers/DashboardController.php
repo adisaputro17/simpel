@@ -150,34 +150,66 @@ class DashboardController extends Controller
             $atributLengkap = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
+                ->pluck('atribut_lengkap');
+
+            $nilaiAtributLengkap = $atributLengkap->count() > 0 ? round($atributLengkap->avg(), 2) : 0;
+            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);
+
+            /*$atributLengkap = PenampilanHarian::where('nip', $pegawai->nip)
+                ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
+                ->where('tahun', $tahun)
                 ->sum('atribut_lengkap');
             
             $nilaiAtributLengkap = $jumlahHariAtribut > 0 ? round($atributLengkap / $jumlahHariAtribut, 2) : 0;
-            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);
+            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);*/
 
             $seragamSesuaiJadwal = PenampilanHarian::where('nip', $pegawai->nip)
+                ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
+                ->where('tahun', $tahun)
+                ->pluck('seragam_sesuai_jadwal');
+
+            $nilaiSeragamSesuaiJadwal = $seragamSesuaiJadwal->count() > 0 ? round($seragamSesuaiJadwal->avg(), 2) : 0;
+            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);
+
+            /*$seragamSesuaiJadwal = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('seragam_sesuai_jadwal');
 
             $nilaiSeragamSesuaiJadwal = $jumlahHariAtribut > 0 ? round($seragamSesuaiJadwal / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);
+            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);*/
 
             $seragamSesuaiAturan = PenampilanHarian::where('nip', $pegawai->nip)
+                ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
+                ->where('tahun', $tahun)
+                ->pluck('seragam_sesuai_aturan');
+
+            $nilaiSeragamSesuaiAturan = $seragamSesuaiAturan->count() > 0 ? round($seragamSesuaiAturan->avg(), 2) : 0;
+            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);
+
+            /*$seragamSesuaiAturan = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('seragam_sesuai_aturan');
 
             $nilaiSeragamSesuaiAturan = $jumlahHariAtribut > 0 ? round($seragamSesuaiAturan / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);
+            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);*/
 
             $rapi = PenampilanHarian::where('nip', $pegawai->nip)
+                ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
+                ->where('tahun', $tahun)
+                ->pluck('rapi');
+
+            $nilaiRapi = $rapi->count() > 0 ? round($rapi->avg(), 2) : 0;
+            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);
+
+            /*$rapi = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('rapi');
 
             $nilaiRapi = $jumlahHariAtribut > 0 ? round($rapi / $jumlahHariAtribut, 2) : 0;
-            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);
+            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);*/
 
             $nilaiPenampilan = $nilaiAtributLengkapBobot + $nilaiSeragamSesuaiJadwalBobot + $nilaiSeragamSesuaiAturanBobot + $nilaiRapiBobot;
             $nilaiPenampilanBobot = round($nilaiPenampilan * 0.10, 2);
