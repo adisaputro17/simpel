@@ -83,7 +83,7 @@ class DashboardController extends Controller
             $nilaiAbsensiBobot = 100 * 0.3;
 
             $nilaiApel = $presensiApel[$pegawai->nip]['presentase_hadir'] ?? 0;
-            $nilaiApelBobot = $nilaiApel * 0.3;
+            $nilaiApelBobot = round($nilaiApel * 0.3, 2);
 
             $izin = IzinKeluar::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -96,10 +96,10 @@ class DashboardController extends Controller
                 return $keluar->diffInMinutes($kembali) / 60; // hasil jam
             });
             $nilaiIzinKeluar = max(0, round(((150 - $totalJam) / 150) * 100, 2));
-            $nilaiIzinKeluarBobot = $nilaiIzinKeluar * 0.4;
+            $nilaiIzinKeluarBobot = round($nilaiIzinKeluar * 0.4, 2);
 
             $totalNilaiKehadiran = $nilaiAbsensiBobot + $nilaiApelBobot + $nilaiIzinKeluarBobot;
-            $totalNilaiKehadiranBobot = $totalNilaiKehadiran * 0.2;
+            $totalNilaiKehadiranBobot = round($totalNilaiKehadiran * 0.2, 2);
 
             $nilaiKinerja = 100;
             $nilaiKinerjaBobot = 100 * 0.2;
@@ -111,7 +111,7 @@ class DashboardController extends Controller
                 ->pluck('nilai'); 
 
             $nilaiObjektif = $penilaianObjektif->count() > 0 ? round($penilaianObjektif->avg(), 2) : 0;
-            $nilaiObjektifBobot = $nilaiObjektif * 0.45;
+            $nilaiObjektifBobot = round($nilaiObjektif * 0.45, 2);
 
             $tugasTambahan = TugasTambahan::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -124,10 +124,10 @@ class DashboardController extends Controller
                 return $mulai->diffInMinutes($selesai) / 60; // hasil jam
             });
             $nilaiTugasTambahan = max(0, round(($totalJam / 150) * 100, 2));
-            $nilaiTugasTambahanBobot = $nilaiTugasTambahan * 0.35;
+            $nilaiTugasTambahanBobot = round($nilaiTugasTambahan * 0.35, 2);
 
             $totalNilaiKinerja = $nilaiKinerjaBobot + $nilaiObjektifBobot + $nilaiTugasTambahanBobot;
-            $totalNilaiKinerjaBobot = $totalNilaiKinerja * 0.25;
+            $totalNilaiKinerjaBobot = round($totalNilaiKinerja * 0.25, 2);
   
             $penilaianKerjaSama = Penilaian::where('nip', $pegawai->nip)
                 ->where('jenis', 'kerja_sama')
@@ -136,7 +136,7 @@ class DashboardController extends Controller
                 ->pluck('nilai'); 
 
             $nilaiKerjaSama = $totalPegawai > 0 ? round($penilaianKerjaSama->sum() / $totalPegawai, 2) : 0;
-            $nilaiKerjaSamaBobot = $nilaiKerjaSama * 0.15;
+            $nilaiKerjaSamaBobot = round($nilaiKerjaSama * 0.15, 2);
 
             $penilaianInovasi = Penilaian::where('nip', $pegawai->nip)
                 ->where('jenis', 'inovasi')
@@ -145,7 +145,7 @@ class DashboardController extends Controller
                 ->pluck('nilai'); 
 
             $nilaiInovasi = $penilaianInovasi->count() > 0 ? round($penilaianInovasi->avg(), 2) : 0;
-            $nilaiInovasiBobot = $nilaiInovasi * 0.15;
+            $nilaiInovasiBobot = round($nilaiInovasi * 0.15, 2);
 
             $atributLengkap = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -153,7 +153,7 @@ class DashboardController extends Controller
                 ->sum('atribut_lengkap');
             
             $nilaiAtributLengkap = $jumlahHariAtribut > 0 ? round($atributLengkap / $jumlahHariAtribut, 2) : 0;
-            $nilaiAtributLengkapBobot = $nilaiAtributLengkap * 0.25;
+            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);
 
             $seragamSesuaiJadwal = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -161,7 +161,7 @@ class DashboardController extends Controller
                 ->sum('seragam_sesuai_jadwal');
 
             $nilaiSeragamSesuaiJadwal = $jumlahHariAtribut > 0 ? round($seragamSesuaiJadwal / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiJadwalBobot = $nilaiSeragamSesuaiJadwal * 0.25;
+            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);
 
             $seragamSesuaiAturan = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -169,7 +169,7 @@ class DashboardController extends Controller
                 ->sum('seragam_sesuai_aturan');
 
             $nilaiSeragamSesuaiAturan = $jumlahHariAtribut > 0 ? round($seragamSesuaiAturan / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiAturanBobot = $nilaiSeragamSesuaiAturan * 0.25;
+            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);
 
             $rapi = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -177,10 +177,10 @@ class DashboardController extends Controller
                 ->sum('rapi');
 
             $nilaiRapi = $jumlahHariAtribut > 0 ? round($rapi / $jumlahHariAtribut, 2) : 0;
-            $nilaiRapiBobot = $nilaiRapi * 0.25;
+            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);
 
             $nilaiPenampilan = $nilaiAtributLengkapBobot + $nilaiSeragamSesuaiJadwalBobot + $nilaiSeragamSesuaiAturanBobot + $nilaiRapiBobot;
-            $nilaiPenampilanBobot = $nilaiPenampilan * 0.10;
+            $nilaiPenampilanBobot = round($nilaiPenampilan * 0.10, 2);
 
             // komplain
             $jumlahKeluhan = Keluhan::where('kepada', $pegawai->nip)
