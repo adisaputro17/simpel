@@ -57,6 +57,34 @@ class DashboardController extends Controller
         }
     }
 
+    function getAbsensi($bulan_awal, $bulan_akhir, $tahun) {
+        $client = new Client();
+        
+        $response = $client->request('GET', 'https://pusdasip.kedirikota.go.id/webservicesv2/getAbsen.php',
+        [
+            'query' => [
+                'skpd_id'       => 107,
+                'bulan_awal'    => $bulan_awal,
+                'bulan_akhir'   => $bulan_akhir,
+            ],
+        ]);
+        
+        if ($response->getStatusCode() === 200) {
+            $json = json_decode($response->getBody(), true);
+            
+            if ($json['status'] === 'ok' && !empty($json['data'])) {
+                return collect($json['data'])->map(function ($item) {
+                    $item['persentase_absen'] = (float) $item['persentase_absen'];
+                    return $item;
+                })->keyBy('nip')->toArray();
+            }
+            
+            return [];
+        } else {
+            return [];
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -71,6 +99,8 @@ class DashboardController extends Controller
         $pegawais = Pegawai::where('nip', '!=', '196705061992021003')->orderBy('nip', 'asc')->get();
         $totalPegawai = $pegawais->count() - 1;
 
+        $absensi = $this->getAbsensi($bulan_awal, $bulan_akhir, $tahun);
+
         $presensiApel = $this->getPresensiApel($bulan_awal, $bulan_akhir, $tahun);
 
         $jumlahHariAtribut = PenampilanHarian::whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -78,12 +108,14 @@ class DashboardController extends Controller
             ->distinct('tanggal')
             ->count('tanggal');
        
-        $data = $pegawais->map(function ($pegawai) use ($bulan_awal, $bulan_akhir, $tahun, $totalPegawai, $presensiApel, $jumlahHariAtribut) {            
-            $nilaiAbsensi = 100;
-            $nilaiAbsensiBobot = 100 * 0.3;
+        $data = $pegawais->map(function ($pegawai) use ($bulan_awal, $bulan_akhir, $tahun, $totalPegawai, $absensi, $presensiApel, $jumlahHariAtribut) {            
+            $precision = 4;
+
+            $nilaiAbsensi = $absensi[$pegawai->nip]['persentase_absen'] ?? 0;
+            $nilaiAbsensiBobot = round($nilaiAbsensi * 0.3, $precision);
 
             $nilaiApel = $presensiApel[$pegawai->nip]['presentase_hadir'] ?? 0;
-            $nilaiApelBobot = round($nilaiApel * 0.3, 2);
+            $nilaiApelBobot = round($nilaiApel * 0.3, $precision);
 
             $izin = IzinKeluar::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -95,11 +127,11 @@ class DashboardController extends Controller
                 $kembali = Carbon::parse($item->jam_kembali);
                 return $keluar->diffInMinutes($kembali) / 60; // hasil jam
             });
-            $nilaiIzinKeluar = max(0, round(((150 - $totalJam) / 150) * 100, 2));
-            $nilaiIzinKeluarBobot = round($nilaiIzinKeluar * 0.4, 2);
+            $nilaiIzinKeluar = max(0, round(((150 - $totalJam) / 150) * 100, $precision));
+            $nilaiIzinKeluarBobot = round($nilaiIzinKeluar * 0.4, $precision);
 
             $totalNilaiKehadiran = $nilaiAbsensiBobot + $nilaiApelBobot + $nilaiIzinKeluarBobot;
-            $totalNilaiKehadiranBobot = round($totalNilaiKehadiran * 0.2, 2);
+            $totalNilaiKehadiranBobot = round($totalNilaiKehadiran * 0.2, $precision);
 
             $nilaiKinerja = 100;
             $nilaiKinerjaBobot = 100 * 0.2;
@@ -110,8 +142,8 @@ class DashboardController extends Controller
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->pluck('nilai'); 
 
-            $nilaiObjektif = $penilaianObjektif->count() > 0 ? round($penilaianObjektif->avg(), 2) : 0;
-            $nilaiObjektifBobot = round($nilaiObjektif * 0.45, 2);
+            $nilaiObjektif = $penilaianObjektif->count() > 0 ? round($penilaianObjektif->avg(), $precision) : 0;
+            $nilaiObjektifBobot = round($nilaiObjektif * 0.45, $precision);
 
             $tugasTambahan = TugasTambahan::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
@@ -123,11 +155,11 @@ class DashboardController extends Controller
                 $selesai = Carbon::parse($item->jam_selesai);
                 return $mulai->diffInMinutes($selesai) / 60; // hasil jam
             });
-            $nilaiTugasTambahan = max(0, round(($totalJam / 150) * 100, 2));
-            $nilaiTugasTambahanBobot = round($nilaiTugasTambahan * 0.35, 2);
+            $nilaiTugasTambahan = max(0, round(($totalJam / 150) * 100, $precision));
+            $nilaiTugasTambahanBobot = round($nilaiTugasTambahan * 0.35, $precision);
 
             $totalNilaiKinerja = $nilaiKinerjaBobot + $nilaiObjektifBobot + $nilaiTugasTambahanBobot;
-            $totalNilaiKinerjaBobot = round($totalNilaiKinerja * 0.25, 2);
+            $totalNilaiKinerjaBobot = round($totalNilaiKinerja * 0.25, $precision);
   
             $penilaianKerjaSama = Penilaian::where('nip', $pegawai->nip)
                 ->where('jenis', 'kerja_sama')
@@ -135,8 +167,8 @@ class DashboardController extends Controller
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->pluck('nilai'); 
 
-            $nilaiKerjaSama = $totalPegawai > 0 ? round($penilaianKerjaSama->sum() / $totalPegawai, 2) : 0;
-            $nilaiKerjaSamaBobot = round($nilaiKerjaSama * 0.15, 2);
+            $nilaiKerjaSama = $totalPegawai > 0 ? round($penilaianKerjaSama->sum() / $totalPegawai, $precision) : 0;
+            $nilaiKerjaSamaBobot = round($nilaiKerjaSama * 0.15, $precision);
 
             $penilaianInovasi = Penilaian::where('nip', $pegawai->nip)
                 ->where('jenis', 'inovasi')
@@ -144,75 +176,75 @@ class DashboardController extends Controller
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->pluck('nilai'); 
 
-            $nilaiInovasi = $penilaianInovasi->count() > 0 ? round($penilaianInovasi->avg(), 2) : 0;
-            $nilaiInovasiBobot = round($nilaiInovasi * 0.15, 2);
+            $nilaiInovasi = $penilaianInovasi->count() > 0 ? round($penilaianInovasi->avg(), $precision) : 0;
+            $nilaiInovasiBobot = round($nilaiInovasi * 0.15, $precision);
 
             $atributLengkap = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->pluck('atribut_lengkap');
 
-            $nilaiAtributLengkap = $atributLengkap->count() > 0 ? round($atributLengkap->avg(), 2) : 0;
-            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);
+            $nilaiAtributLengkap = $atributLengkap->count() > 0 ? round($atributLengkap->avg(), $precision) : 0;
+            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, $precision);
 
             /*$atributLengkap = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('atribut_lengkap');
             
-            $nilaiAtributLengkap = $jumlahHariAtribut > 0 ? round($atributLengkap / $jumlahHariAtribut, 2) : 0;
-            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, 2);*/
+            $nilaiAtributLengkap = $jumlahHariAtribut > 0 ? round($atributLengkap / $jumlahHariAtribut, $precision) : 0;
+            $nilaiAtributLengkapBobot = round($nilaiAtributLengkap * 0.25, $precision);*/
 
             $seragamSesuaiJadwal = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->pluck('seragam_sesuai_jadwal');
 
-            $nilaiSeragamSesuaiJadwal = $seragamSesuaiJadwal->count() > 0 ? round($seragamSesuaiJadwal->avg(), 2) : 0;
-            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);
+            $nilaiSeragamSesuaiJadwal = $seragamSesuaiJadwal->count() > 0 ? round($seragamSesuaiJadwal->avg(), $precision) : 0;
+            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, $precision);
 
             /*$seragamSesuaiJadwal = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('seragam_sesuai_jadwal');
 
-            $nilaiSeragamSesuaiJadwal = $jumlahHariAtribut > 0 ? round($seragamSesuaiJadwal / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, 2);*/
+            $nilaiSeragamSesuaiJadwal = $jumlahHariAtribut > 0 ? round($seragamSesuaiJadwal / $jumlahHariAtribut, $precision) : 0;
+            $nilaiSeragamSesuaiJadwalBobot = round($nilaiSeragamSesuaiJadwal * 0.25, $precision);*/
 
             $seragamSesuaiAturan = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->pluck('seragam_sesuai_aturan');
 
-            $nilaiSeragamSesuaiAturan = $seragamSesuaiAturan->count() > 0 ? round($seragamSesuaiAturan->avg(), 2) : 0;
-            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);
+            $nilaiSeragamSesuaiAturan = $seragamSesuaiAturan->count() > 0 ? round($seragamSesuaiAturan->avg(), $precision) : 0;
+            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, $precision);
 
             /*$seragamSesuaiAturan = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('seragam_sesuai_aturan');
 
-            $nilaiSeragamSesuaiAturan = $jumlahHariAtribut > 0 ? round($seragamSesuaiAturan / $jumlahHariAtribut, 2) : 0;
-            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, 2);*/
+            $nilaiSeragamSesuaiAturan = $jumlahHariAtribut > 0 ? round($seragamSesuaiAturan / $jumlahHariAtribut, $precision) : 0;
+            $nilaiSeragamSesuaiAturanBobot = round($nilaiSeragamSesuaiAturan * 0.25, $precision);*/
 
             $rapi = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->pluck('rapi');
 
-            $nilaiRapi = $rapi->count() > 0 ? round($rapi->avg(), 2) : 0;
-            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);
+            $nilaiRapi = $rapi->count() > 0 ? round($rapi->avg(), $precision) : 0;
+            $nilaiRapiBobot = round($nilaiRapi * 0.25, $precision);
 
             /*$rapi = PenampilanHarian::where('nip', $pegawai->nip)
                 ->whereBetween('bulan', [$bulan_awal, $bulan_akhir])
                 ->where('tahun', $tahun)
                 ->sum('rapi');
 
-            $nilaiRapi = $jumlahHariAtribut > 0 ? round($rapi / $jumlahHariAtribut, 2) : 0;
-            $nilaiRapiBobot = round($nilaiRapi * 0.25, 2);*/
+            $nilaiRapi = $jumlahHariAtribut > 0 ? round($rapi / $jumlahHariAtribut, $precision) : 0;
+            $nilaiRapiBobot = round($nilaiRapi * 0.25, $precision);*/
 
             $nilaiPenampilan = $nilaiAtributLengkapBobot + $nilaiSeragamSesuaiJadwalBobot + $nilaiSeragamSesuaiAturanBobot + $nilaiRapiBobot;
-            $nilaiPenampilanBobot = round($nilaiPenampilan * 0.10, 2);
+            $nilaiPenampilanBobot = round($nilaiPenampilan * 0.10, $precision);
 
             // komplain
             $jumlahKeluhan = Keluhan::where('kepada', $pegawai->nip)
@@ -241,9 +273,9 @@ class DashboardController extends Controller
             if ($totalLayanan === 0) {
                 $nilaiKomplain = 100;
             } else {
-                $nilaiKomplain = round(100 - ($jumlahKeluhan / $totalLayanan) * 100, 2);
+                $nilaiKomplain = round(100 - ($jumlahKeluhan / $totalLayanan) * 100, $precision);
             }
-            $nilaiKomplainBobot = round($nilaiKomplain * 0.15, 2);
+            $nilaiKomplainBobot = round($nilaiKomplain * 0.15, $precision);
 
             // total nilai
             $totalNilai = $totalNilaiKehadiranBobot + $totalNilaiKinerjaBobot + $nilaiKerjaSamaBobot + $nilaiInovasiBobot + $nilaiPenampilanBobot + $nilaiKomplainBobot;
