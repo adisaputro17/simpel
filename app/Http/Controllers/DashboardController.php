@@ -27,7 +27,9 @@ class DashboardController extends Controller
         $last_day = date('t', strtotime("{$tahun}-{$bulan_akhir}-01"));
         $end_date = "{$tahun}-{$bulan_akhir}-{$last_day}";
 
-        $client = new Client();
+        $client = new \GuzzleHttp\Client([
+            'verify' => false,
+        ]);
         
         $response = $client->request('GET', 'https://asndigital.kedirikota.go.id/webservice/presensi_pegawai',
         [
@@ -58,8 +60,10 @@ class DashboardController extends Controller
     }
 
     function getAbsensi($bulan_awal, $bulan_akhir, $tahun) {
-        $client = new Client();
-        
+        $client = new \GuzzleHttp\Client([
+            'verify' => false,
+        ]);
+
         $response = $client->request('GET', 'https://pusdasip.kedirikota.go.id/webservicesv2/getAbsen.php',
         [
             'query' => [
