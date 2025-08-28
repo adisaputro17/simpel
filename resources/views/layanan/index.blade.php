@@ -22,7 +22,7 @@
                             <th>Jenis</th>
                             <th>Tahun</th>
                             @for($i = 1; $i <= 12; $i++)
-                                <th>B{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</th>
+                                <th>Bulan{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</th>
                             @endfor
                             <th>Aksi</th>
                         </tr>
